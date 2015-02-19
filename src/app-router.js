@@ -266,8 +266,13 @@
     // make sure the user didn't navigate to a different route while it loaded
     if (route === router.loadingRoute) {
       if (route.hasAttribute('template')) {
-        // template
-        activateTemplate(router, importLink.import.querySelector('template'), route, url, eventDetail);
+        var templateSelector = route.getAttribute('template');
+        if (templateSelector) {
+          activateTemplate(router, importLink.import.querySelector(templateSelector), route, url, eventDetail);
+        } else {
+          // template
+          activateTemplate(router, importLink.import.querySelector('template'), route, url, eventDetail);
+        }
       } else {
         // custom element
         activateCustomElement(router, route.getAttribute('element') || importUri.split('/').slice(-1)[0].replace('.html', ''), route, url, eventDetail);
@@ -290,7 +295,15 @@
   // Create an instance of the template
   function activateTemplate(router, template, route, url, eventDetail) {
     var templateInstance;
-    if ('createInstance' in template) {
+    if (template.getAttribute('is') == 'auto-binding') {
+      var model = createModel(router, route, url, eventDetail);
+      templateInstance = document.importNode(template, true);
+      for (var property in model) {
+        if (model.hasOwnProperty(property)) {
+          templateInstance[property] = model[property];
+        }
+      }
+    } else if ('createInstance' in template) {
       // template.createInstance(model) is a Polymer method that binds a model to a template and also fixes
       // https://github.com/erikringsmuth/app-router/issues/19
       var model = createModel(router, route, url, eventDetail);
@@ -351,6 +364,8 @@
     if (url.hash && !router.hasAttribute('core-animated-pages')) {
       scrollToHash(url.hash);
     }
+
+    eventDetail.instance = element;
 
     fire('activate-route-end', eventDetail, router);
     fire('activate-route-end', eventDetail, eventDetail.route);

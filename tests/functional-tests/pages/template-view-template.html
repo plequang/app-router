@@ -1,0 +1,25 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<template is="auto-binding" template-view="view1">
+		This is my template<br />
+		Param1={{ params.param1 }}.
+		<br />
+		Param2={{ param2 }}.
+		<br />
+		Click count: {{ clickCount }}
+		<br />
+		<button is="core-button" on-click="{{ buttonClicked }}">My button</button>
+</template>
+
+<script>
+(function () {
+	console.log('in script');
+	TemplateView('view1', {
+		param2: 'hello',
+		clickCount: 0,
+		buttonClicked: function (e) {
+			console.log('buttonClicked ' + this.clickCount);
+			this.clickCount++;
+		}
+	});
+})();
+</script>

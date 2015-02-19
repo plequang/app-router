@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>app-router</title>
+    <script src="/bower_components/webcomponentsjs/webcomponents.js" debug></script>
+    <link rel="import" href="/bower_components/polymer/polymer.html">
+    <link rel="import" href="/src/app-router.html">
+  </head>
+  <body>
+
+    <p>template-view test</p>
+    <ul>
+      <li><a href="#/">Start page</a></li>
+      <li><a href="#/template-view-template">/template-view-template</a></li>
+      <li><a href="#/auto-binding-template">/auto-binding-template</a></li>
+
+    </ul>
+
+    <app-router init="manual" >
+      <app-route path="/">
+        <template>
+          This is start page
+        </template>
+      </app-route>
+      <app-route path="/template-view-template" import="pages/template-view-template" template="template[template-view='view1']"></app-route>
+      <app-route path="/auto-binding-template" import="pages/auto-binding-template" template></app-route>
+    </app-router>
+<script>
+  var templates = {};
+
+  function TemplateView(name, model) {
+    templates[name] = model;
+  }
+  window.addEventListener('WebComponentsReady', function() {
+    var router = document.querySelector('app-router');
+
+    router.addEventListener('before-data-binding', function(event) {
+      var newModel = {
+        params: {}
+      };
+      for (var property in event.detail.model) {
+        if (event.detail.model.hasOwnProperty(property)) {
+          newModel.params[property] = event.detail.model[property];
+        }
+      }
+      delete event.detail.model;
+      event.detail.model = newModel;
+    });
+
+    router.addEventListener('activate-route-end', function(event) {
+        if (event.detail.path === '/template-view-template' && event.detail.instance.hasAttribute('template-view')) {
+          var templateViewName = event.detail.instance.getAttribute('template-view');
+          if (templates[templateViewName]) {
+            Polymer.mixin(event.detail.instance, templates[templateViewName]);
+          }
+        }
+    });
+
+    router.init();
+  });
+</script>
+  </body>
+</html>
