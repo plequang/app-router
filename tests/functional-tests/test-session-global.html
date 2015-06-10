@@ -9,29 +9,46 @@
     <link rel="import" href="/src/app-router.html">
   </head>
   <body>
+     <div style="border: 1px solid grey;">
+      <h3>Polymer 1.0 Failed</h3>
+      Do'nt know how to bind main &lt;user-session&gt; <code>session</code> property to child &lt;user-session&gt;.
+    </div>
 
-    <polymer-element name="user-session" attributes="session">
+
+    <dom-module id="user-session">
       <template>
       </template>
+    </dom-module>
       <script>
         Polymer({
-          session: {
-            userId: null,
-            userName: null
+          is: 'user-session',
+          properties: {
+            session: {
+              type: Object,
+              value: function () {
+                return {
+                  userId: null,
+                  userName: null
+                }
+              },
+              readOnly: true,
+              notify: true,
+            }
           }
         });
       </script>
-    </polymer-element>
 
-    <polymer-element name="login-page" attributes="router">
+    <dom-module name="login-page">
       <template>
         <!-- bind the session object to login-page -->
         <user-session session="{{session}}"></user-session>
 
-        <button on-click="{{login}}">Log In</button>
+        <button on-click="login">Log In</button>
       </template>
+    </dom-module>
       <script>
         Polymer({
+          is: 'login-page',
           login: function() {
             this.session.userId = '12345';
             this.session.userName = 'Jon Doe';
@@ -39,19 +56,20 @@
           }
         });
       </script>
-    </polymer-element>
 
-    <polymer-element name="home-page" attributes="router">
+    <dom-module id="home-page">
       <template>
         <!-- bind the session object to home-page -->
         <user-session session="{{session}}"></user-session>
 
-        <p>ID: {{session.userId}}</p>
-        <p>Name: {{session.userName}}</p>
-        <button on-click="{{logout}}">Log Out</button>
+        <p>ID: <span>{{session.userId}}</span></p>
+        <p>Name: <span>{{session.userName}}</span></p>
+        <button on-click="logout">Log Out</button>
       </template>
+    </dom-module>
       <script>
         Polymer({
+          is: 'home-page',
           logout: function() {
             this.session.userId = null;
             this.session.userName = null;
@@ -59,33 +77,42 @@
           }
         });
       </script>
-    </polymer-element>
 
-    <polymer-element name="demo-app">
+    <dom-module name="demo-app">
       <template>
         <!-- bind the session object to demo-app -->
         <user-session session="{{session}}"></user-session>
 
-        <app-router id="router" on-state-change="{{stateChange}}">
+        <app-router id="router" on-state-change="stateChange" init="manual">
           <app-route path="/" element="home-page" bindRouter></app-route>
           <app-route path="/login" element="login-page" bindRouter></app-route>
           <app-route path="*" redirect="/"></app-route>
         </app-router>
 
       </template>
+    </dom-module>
       <script>
         Polymer({
+          is: 'demo-app',
+          properties: {
+            session: {
+              type: Object,
+              notify: true,
+            }
+          },
+          ready: function () {
+            this.$.router.init();
+          },
           stateChange: function(event) {
             // redirect to the login page if not signed in
             if (!this.session.userId && event.detail.path !== '/login') {
               event.preventDefault();
-              //this.$.router.go('/login');
-              this.querySelector('::shadow app-router').go('/login');
+              this.$.router.go('/login');
+              //this.querySelector('::shadow app-router').go('/login');
             }
           }
         });
       </script>
-    </polymer-element>
 
     <demo-app></demo-app>
 

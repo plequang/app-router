@@ -9,7 +9,11 @@
     <link rel="import" href="/src/app-router.html">
   </head>
   <body>
+   <div style="border: 1px solid grey;">
+      <h3>Polymer 1.0 Failed</h3>
+      &lt;template&gt;.createInstance is gone, so query parameters are not bound to the template anymore.
 
+    </div>
     <p>Test the different <code>app-route</code> types by navigating through these links.</p>
     <ul>
       <li><a href="#/page1/123">/page1/123</a></li>
@@ -21,12 +25,12 @@
     <app-router init="manual" typecast="string">
       <app-route path="/page1/:num">
         <template>
-          <h2>Page 1 - {{num}}</h2>
+          <h2>Page 1 - <span>{{num}}</span></h2>
         </template>
       </app-route>
       <app-route path="/page2/:string">
         <template>
-          <h2>Page 2 - {{string}}</h2>
+          <h2>Page 2 - <span>{{string}}</span></h2>
         </template>
       </app-route>
       <app-route path="*" import="pages/not-found-page.html"></app-route>

@@ -10,43 +10,79 @@
   </head>
   <body>
 
+   <div style="border: 1px solid grey;">
+      <h3>Polymer 1.0 OK/Failed</h3>
+      <ul>
+        <li>ready : pageNum undefined</li>
+        <li><strong>domReady does not eist anymore</strong></li>
+        <li>added a test with attached callback, pageNum is defined</li>
+      </ul>
+    </div>
     <p>Test the difference between Polymer's domReady() and ready() callbacks.</p>
+    <p>Polymer 1.0 : added an attached callback test, as domReady does not exist anymore</p>
     <ul>
-      <li><a href="#/domready/123">/domready/123</a></li>
-      <li><a href="#/domready/456">/domready/456</a></li>
-      <li><a href="#/ready/789">/ready/123</a></li>
-      <li><a href="#/ready/890">/ready/456</a></li>
+      <li><a href="#/domready/123">/domready/123</a><strong>domReady does not exist anymore</strong></li>
+      <li><a href="#/domready/456">/domready/456</a> <strong>domReady does not exist anymore</strong></li>
+      <li><a href="#/attached/123">/attached/123</a></li>
+      <li><a href="#/attached/456">/attached/456</a></li>
+      <li><a href="#/ready/789">/ready/789</a></li>
+      <li><a href="#/ready/890">/ready/890</a></li>
     </ul>
 
-    <polymer-element name="domready-page" attributes="pageNum">
+    <dom-module id="domready-page" attributes="pageNum">
       <template>
-        <h2>domready {{pageNum}}</h2>
+        <h2>domready <span>{{pageNum}}</span></h2>
       </template>
+    </dom-module>
       <script>
         Polymer({
+          is: 'domready-page',
+          properties: {
+            pageNum: Number
+          },
           domReady: function() {
             console.log('domReady() ' + this.pageNum);
           }
         });
       </script>
-    </polymer-element>
 
-    <polymer-element name="ready-page" attributes="pageNum">
+    <dom-module id="attached-page" attributes="pageNum">
       <template>
-        <h2>ready {{pageNum}}</h2>
+        <h2>attached <span>{{pageNum}}</span></h2>
       </template>
+    </dom-module>
       <script>
         Polymer({
+          is: 'attached-page',
+          properties: {
+            pageNum: Number
+          },
+          attached: function() {
+            console.log('attached() ' + this.pageNum);
+          }
+        });
+      </script>
+    <dom-module id="ready-page" attributes="pageNum">
+      <template>
+        <h2>ready <span>{{pageNum}}</span></h2>
+      </template>
+    </dom-module>
+      <script>
+        Polymer({
+          is: 'ready-page',
+          properties: {
+            pageNum: Number
+          },
           ready: function() {
             console.log('ready() ' + this.pageNum);
           }
         });
       </script>
-    </polymer-element>
 
     <app-router>
       <app-route path="/domready/:pageNum" element="domready-page"></app-route>
       <app-route path="/ready/:pageNum" element="ready-page"></app-route>
+       <app-route path="/attached/:pageNum" element="attached-page"></app-route>
     </app-router>
 
   </body>

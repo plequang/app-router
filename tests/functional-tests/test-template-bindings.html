@@ -10,6 +10,13 @@
   </head>
   <body>
 
+   <div style="border: 1px solid grey;">
+      <h3>Polymer 1.0 Failed</h3>
+      <ul>
+        <li>data binding to templates does not work anymore (Polymer's template.createInstance removed)</li>
+        <li><code>router.templateInstance.model</code> does not exists anymore</li>
+      </ul>
+    </div>
     <p>Test the different <code>app-route</code> types by navigating through these links.</p>
     <ul>
       <li><a href="#/template-binding/1234/route%20args!">/template-binding/1234/route%20args!</a></li>
@@ -20,47 +27,54 @@
 
     <p>Data binding to templates, testing <code>bindRouter</code>, and <code>bindRouter</code> to get the parent template with <code>router.templateInstance.model</code> bindings.</p>
 
-    <polymer-element name="test-binding-page" attributes="second third router">
+    <dom-module id="test-binding-page">
       <template>
-        <h2>parent published attribute - {{router.templateInstance.model.first}}</h2>
-        <h2>route arg bound to custom element - {{second}}</h2>
-        <h2>route arg bound to custom element - {{third}}</h2>
-        <h2>parent property (not published) - {{router.templateInstance.model.fourth}}</h2>
+        <h2>parent published attribute - <span>{{router.templateInstance.model.first}}</span></h2>
+        <h2>route arg bound to custom element - <span>{{second}}</span></h2>
+        <h2>route arg bound to custom element - <span>{{third}}</span></h2>
+        <h2>parent property (not published) - <span>{{router.templateInstance.model.fourth}}</span></h2>
       </template>
-      <script>
-        Polymer('test-binding-page', {
-          domReady: function() {
-            // dynamic data binding should update the parent's template too
-            this.router.templateInstance.model.first = 'updated 1st arg!';
-          }
-        });
-      </script>
-    </polymer-element>
+    </dom-module>
+    <script>
+      Polymer({
+        is: 'test-binding-page',
+        properties: {
+          second: Number,
+          third: Number,
+          router: Object
+        },
+        attached: function() {
+          // dynamic data binding should update the parent's template too
+          // TODO(plequang): no working anymer
+          this.router.templateInstance.model.first = 'updated 1st arg!';
+        }
+      });
+    </script>
 
-    <polymer-element name="router-binding-example" attributes="first">
+    <dom-module id="router-binding-example">
       <template>
         <!-- dynamic data binding should update the parent's template when the child sets router.templateInstance.model.first -->
-        <p>In the parent template, first arg - {{first}}</p>
+        <p>In the parent template, first arg <span>{{first}}</span></p>
         <app-router>
           <app-route path="/custom-element-binding/:second/:third" element="test-binding-page" bindRouter></app-route>
           <app-route path="/template-binding/:second/:third" bindRouter>
             <template>
-              <h2>parent published attribute - {{router.templateInstance.model.first}}</h2>
-              <h2>route arg bound to template - {{second}}</h2>
-              <h2>route arg bound to template - {{third}}</h2>
-              <h2>parent property (not published) - {{router.templateInstance.model.fourth}}</h2>
+              <h2>parent published attribute - <span>{{router.templateInstance.model.first}}</span></h2>
+              <h2>route arg bound to template - <span>{{second}}</span></h2>
+              <h2>route arg bound to template - <span>{{third}}</span></h2>
+              <h2>parent property (not published) - <span>{{router.templateInstance.model.fourth}}</span></h2>
             </template>
           </app-route>
           <app-route path="/no-router-binding">
             <template>
               <h2>Parent bindings shouldn't be available in this case.</h2>
-              <h2>parent published attribute - {{router.templateInstance.model.first}}</h2>
-              <h2>parent property (not published) - {{router.templateInstance.model.fourth}}</h2>
+              <h2>parent published attribute - <span>{{router.templateInstance.model.first}}</span></h2>
+              <h2>parent property (not published) - <span>{{router.templateInstance.model.fourth}}</span></h2>
             </template>
           </app-route>
-          <app-route path="/before-data-binding-event" on-before-data-binding="{{updateRouteModel}}">
+          <app-route path="/before-data-binding-event" on-before-data-binding="updateRouteModel">
             <template>
-              <h2>Property bound using <code>before-data-binding</code> event - {{newProperty}}</h2>
+              <h2>Property bound using <code>before-data-binding</code> event - <span>{{newProperty}}</span></h2>
             </template>
           </app-route>
           <app-route path="*">
@@ -70,20 +84,28 @@
           </app-route>
         </app-router>
       </template>
-      <script>
-        Polymer('router-binding-example', {
-          ready: function() {
-            this.fourth = '4th arg!';
-          },
-          firstChanged: function(oldFirst, newFirst) {
-            console.log('parent {{first}} updated: ' + newFirst);
-          },
-          updateRouteModel: function(event) {
-            event.detail.model.newProperty = 'modified model';
+    </dom-module>
+    <script>
+      Polymer({
+        is: 'router-binding-example',
+        properties: {
+          first: {
+            type: Number,
+            observer: 'firstChanged'
           }
-        });
-      </script>
-    </polymer-element>
+        },
+        ready: function() {
+          this.fourth = '4th arg!';
+        },
+        firstChanged: function(oldFirst, newFirst) {
+          console.log('parent {{first}} updated: ' + newFirst);
+        },
+        updateRouteModel: function(event) {
+          console.log('updateRouteModel', event);
+          event.detail.model.newProperty = 'modified model';
+        }
+      });
+    </script>
 
     <router-binding-example first="1st arg!"></router-binding-example>
 

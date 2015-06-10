@@ -9,7 +9,13 @@
     <link rel="import" href="/src/app-router.html">
   </head>
   <body>
-
+   <div style="border: 1px solid grey;">
+      <h3>Polymer 1.0 OK</h3>
+      <ul>
+        <li>migrated to dom-module element registration.</li>
+        <li>use attached callback instead of domReady</li>
+      </ul>
+    </div>
     <p>Test the different <code>app-route</code> types by navigating through these links.</p>
     <ul>
       <li><a href="#/">/</a></li>
@@ -20,24 +26,30 @@
 
     <p>Test when <code>bindRouter</code> is available in the custom element lifecycle. <code>/polymer-page</code> and <code>/custom-el-page</code> should call <code>router.go('/other')</code>. You should never see <code>/polymer-page</code> or <code>/custom-el-page</code>.</p>
 
-    <polymer-element name="first-page" noscript>
+    <dom-module id="first-page">
       <template>
         <h2>Page 1</h2>
       </template>
-    </polymer-element>
+    </dom-module>
+    <script>
+    Polymer({
+      is: 'first-page'
+    });
+    </script>
 
-    <polymer-element name="polymer-page" attributes="router">
+    <dom-module id="polymer-page">
       <template>
         <h2><code>polymer-page</code> - should call <code>router.go('/other')</code> so you shouldn't be reading this.</h2>
       </template>
-      <script>
-        Polymer('polymer-page', {
-          domReady: function() {
+    </dom-module>
+    <script>
+      Polymer({
+        is: 'polymer-page',
+        attached: function() {
             this.router.go('/other');
           }
         });
       </script>
-    </polymer-element>
 
     <script>
       var customElPage = Object.create(HTMLElement.prototype);
@@ -49,11 +61,16 @@
       });
     </script>
 
-    <polymer-element name="other-page" noscript>
+    <dom-module id="other-page">
       <template>
         <h2>Other page - <code>router.go()</code> was called correctly.</h2>
       </template>
-    </polymer-element>
+    </dom-module>
+    <script>
+    Polymer({
+      is: 'other-page'
+    });
+    </script>
 
     <app-router mode="hash">
       <app-route path="/" element="first-page"></app-route>

@@ -1,7 +1,15 @@
 <link rel="import" href="/bower_components/polymer/polymer.html">
 
-<polymer-element name="databind-page" attributes="pageNum" noscript>
+<dom-module id="databind-page">
   <template>
-    <h2>Match multiple URLs custom element - {{pageNum}}</h2>
+  <h2>Match multiple URLs custom element - <span>{{pageNum}}</span></h2>
   </template>
-</polymer-element>
+</dom-module>
+<script>
+	Polymer({
+		is: 'databind-page',
+		properties: {
+			pageNum: { type: Number }
+		}
+	})
+</script>
