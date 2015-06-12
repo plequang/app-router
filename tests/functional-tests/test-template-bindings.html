@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>app-router</title>
-    <script src="/bower_components/webcomponentsjs/webcomponents.js" debug></script>
+    <script src="/bower_components/webcomponentsjs/webcomponents-lite.js" debug></script>
     <link rel="import" href="/bower_components/polymer/polymer.html">
     <link rel="import" href="/src/app-router.html">
   </head>
@@ -34,22 +34,25 @@
         <h2>route arg bound to custom element - <span>{{third}}</span></h2>
         <h2>parent property (not published) - <span>{{router.templateInstance.model.fourth}}</span></h2>
       </template>
+      <script>
+        HTMLImports.whenReady(function () {
+          Polymer({
+            is: 'test-binding-page',
+            properties: {
+              second: Number,
+              third: Number,
+              router: Object
+            },
+            attached: function() {
+              // dynamic data binding should update the parent's template too
+              // TODO(plequang): no working anymer
+              this.router.templateInstance.model.first = 'updated 1st arg!';
+            }
+          });
+        });
+        </script>
     </dom-module>
-    <script>
-      Polymer({
-        is: 'test-binding-page',
-        properties: {
-          second: Number,
-          third: Number,
-          router: Object
-        },
-        attached: function() {
-          // dynamic data binding should update the parent's template too
-          // TODO(plequang): no working anymer
-          this.router.templateInstance.model.first = 'updated 1st arg!';
-        }
-      });
-    </script>
+
 
     <dom-module id="router-binding-example">
       <template>
@@ -84,28 +87,31 @@
           </app-route>
         </app-router>
       </template>
+      <script>
+        HTMLImports.whenReady(function () {
+          Polymer({
+            is: 'router-binding-example',
+            properties: {
+              first: {
+                type: Number,
+                observer: 'firstChanged'
+              }
+            },
+            ready: function() {
+              this.fourth = '4th arg!';
+            },
+            firstChanged: function(oldFirst, newFirst) {
+              console.log('parent {{first}} updated: ' + newFirst);
+            },
+            updateRouteModel: function(event) {
+              console.log('updateRouteModel', event);
+              event.detail.model.newProperty = 'modified model';
+            }
+          });
+        });
+      </script>
     </dom-module>
-    <script>
-      Polymer({
-        is: 'router-binding-example',
-        properties: {
-          first: {
-            type: Number,
-            observer: 'firstChanged'
-          }
-        },
-        ready: function() {
-          this.fourth = '4th arg!';
-        },
-        firstChanged: function(oldFirst, newFirst) {
-          console.log('parent {{first}} updated: ' + newFirst);
-        },
-        updateRouteModel: function(event) {
-          console.log('updateRouteModel', event);
-          event.detail.model.newProperty = 'modified model';
-        }
-      });
-    </script>
+
 
     <router-binding-example first="1st arg!"></router-binding-example>
 

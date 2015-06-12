@@ -4,20 +4,24 @@
   <template>
     <h2>Imported Bundled Custom Element Page</h2>
   </template>
+  <script>
+	Polymer({
+		is: 'imported-custom-element-page'
+	});
+
+
+</script>
 </dom-module>
 
 <dom-module id="other-imported-custom-element-page" noscript>
   <template>
     <h2>Other Imported Bundled Custom Element Page</h2>
   </template>
-</dom-module>
-
-<script>
-Polymer({
-	is: 'imported-custom-element-page'
-});
-Polymer({
-	is: 'other-imported-custom-element-page'
-});
+  <script>
+	Polymer({
+		is: 'other-imported-custom-element-page'
+	});
 
 </script>
+</dom-module>
+

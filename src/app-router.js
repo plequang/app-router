@@ -32,6 +32,7 @@
   // Initial set up when attached
   AppRouter.attachedCallback = function() {
     // init="auto|manual"
+    console.log('app-router attachedCallback');
     if(this.getAttribute('init') !== 'manual') {
       this.init();
     }
